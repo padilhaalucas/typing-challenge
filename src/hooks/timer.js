@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import * as duckTimerAndScore from '../store/reducers/timerAndScore.duck'
+import * as duckTimer from '../store/reducers/timer.duck'
 
 export const useTimerActions = () => {
   const dispatch = useDispatch()
@@ -10,7 +10,7 @@ export const useTimerActions = () => {
   const actions = useMemo(
     () => bindActionCreators(
       {
-        changeTimer: duckTimerAndScore.changeTimer,
+        changeTimer: duckTimer.changeTimer,
       },
       dispatch
     ), [dispatch]

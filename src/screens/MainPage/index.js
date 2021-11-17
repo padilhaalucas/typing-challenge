@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useStyles } from 'react-styles-hook'
-import { Swal } from 'sweetalert2'
 
 import { AbstractButton } from '../../components/Buttons'
 
@@ -26,7 +25,7 @@ const SinglePage = () => {
 
   const [typedWordsArr, setTypedWordsArr] = useState([])
   
-  const arrayOfWords = textToPresent?.split(' ')
+  const arrayOfWords = textToPresent?.split(/[ ,]+/)
   
   const { changeScore } = useScoreActions()
   const { changeTimer } = useTimerActions()
@@ -68,28 +67,32 @@ const SinglePage = () => {
         })
       }
     }, 1000)
-
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTimer])
 
   const processCurrentText = useCallback((val) => {
     val.preventDefault()
  
     let currentInput = val.target.value
-    let currentInputArr = currentInput?.split(' ')
+    let currentInputArr = currentInput?.split(/[ ,]+/)
 
     setTypedWordsArr(currentInputArr)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTimer])
 
   function checkPontuation(a, b) {
     let common = []
 
-    const bIsBiggerThanA = a.length < b.length
-    const size = bIsBiggerThanA ? a.length : b.length
+    const treatedA = a?.map(i => (
+      i.replace(/\n|"/g, '')
+    ))
+
+    const bIsBiggerThanA = treatedA.length < b.length
+    const size = bIsBiggerThanA ? treatedA.length : b.length
 
     for (let i = 0; i < size; i++) {
-      if (a[i] === b[i]) {
-        common.push(a[i])
+      if (treatedA[i] === b[i]) {
+        common.push(treatedA[i])
       }
     }
 
@@ -100,6 +103,7 @@ const SinglePage = () => {
     if (stopGame) {
       checkPontuation(arrayOfWords, typedWordsArr)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stopGame])
 
   const timerButtons = [
@@ -107,7 +111,7 @@ const SinglePage = () => {
       onClick: () => {
         changeTimer({
           current: '01:00',
-          duration: 10
+          duration: 60
         })
       }
     },
@@ -182,14 +186,14 @@ const SinglePage = () => {
       
       <div style={compStyle.eachSide}>
         <div id={'typingBoxDiv'} style={compStyle.textBoxContainer}>
-          <label for="typingBox" style={compStyle.textBoxLabel}>Type here:</label>
+          <label htmlFor="typingBox" style={compStyle.textBoxLabel}>Type here:</label>
 
           <textarea 
             id="typingBox"
             name="typingBox"
             rows="50"
             cols="50"
-            wrap={true}
+            wrap="true"
             style={compStyle.textBox}
             disabled={isTextBoxDisabled}
             onInput={(val) => processCurrentText(val)}
@@ -205,7 +209,7 @@ const SinglePage = () => {
     <div style={compStyle.responsiveTipContainer}>
       <h1 style={compStyle.responsiveTipText}>You should be in a desktop or laptop to do your test!</h1>
     </div>
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [textToPresent, currentTimer, currentDuration, currentScore, isDesktopOrLaptop])
 
   return renderContent()  
